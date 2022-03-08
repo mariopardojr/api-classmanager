@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
-import { authController } from './controllers/authController';
+import { authController } from './app/controllers/authController';
 
 const app = express();
 

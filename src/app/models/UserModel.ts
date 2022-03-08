@@ -1,4 +1,4 @@
-import mongoose from '../database';
+import mongoose from '../../database';
 import bcrypt from 'bcryptjs';
 
 const StudentSchema = new mongoose.Schema({
@@ -29,7 +29,6 @@ const UserSchema = new mongoose.Schema({
   },
   students: {
     type: [StudentSchema],
-    default: [],
   },
   createdAt: {
     type: Date,
