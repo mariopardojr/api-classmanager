@@ -1,30 +1,27 @@
 import express, { Express } from 'express';
-import { User } from '../models/User';
+import { UserModel } from '../models/UserModel';
+import UserService from '../services/UserService/UserService';
 import { passwordVerification } from '../utils/passwordVerification';
 
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-  const { email } = req.body;
   try {
-    const findUser = await User.findOne({ email });
+    const findUser = await UserService.register(req.body);
 
-    if (findUser) {
-      return res.send(409).send({ message: 'User already exists.' });
+    if (findUser.isError) {
+      return res.status(findUser.status).send({ message: findUser.errorMessage });
     }
 
-    const user = await User.create(req.body);
-    user.password = undefined;
-
-    return res.send({ user });
+    return res.status(findUser.status).send({ user: findUser.data });
   } catch (error) {
-    return res.status(400).send({ message: 'Registration failed.', error });
+    return res.status(500).send({ message: 'Registration failed.', error });
   }
 });
 
 router.post('/authenticate', async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email }).select('+password');
+  const user = await UserModel.findOne({ email }).select('+password');
 
   if (!user) {
     return res.status(404).send({ message: 'User not found.' });
@@ -41,4 +38,4 @@ router.post('/authenticate', async (req, res) => {
   return res.send({ user });
 });
 
-export const authRouter = (app: Express) => app.use('/auth', router);
+export const authController = (app: Express) => app.use('/auth', router);

@@ -1,14 +1,6 @@
 import mongoose from '../database';
 import bcrypt from 'bcryptjs';
 
-type User = {
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-  createdAt?: string;
-};
-
 const StudentSchema = new mongoose.Schema({
   name: String,
   id: String,
@@ -50,4 +42,4 @@ UserSchema.pre('save', async function (next) {
   this.password = hash;
 });
 
-export const User = mongoose.model('User', UserSchema);
+export const UserModel = mongoose.model('User', UserSchema);
