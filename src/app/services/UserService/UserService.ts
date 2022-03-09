@@ -8,6 +8,9 @@ import { UserModel } from '../../models/UserModel';
 import { generateToken } from '../../../utils/generateToken';
 import { passwordVerification } from '../../../utils/passwordVerification';
 import { AuthenticateUser, User, UserAuth } from './types';
+import { transport } from '../../modules/mailer';
+import crypto from 'crypto';
+import 'dotenv/config';
 
 const register = async (user: User): Promise<Result<AuthenticateUser>> => {
   const { email } = user;
@@ -39,9 +42,41 @@ const authenticate = async ({ email, password }: UserAuth): Promise<Result<Authe
   return new ResultSuccess({ user, token: generateToken({ id: user.id }) });
 };
 
+const forgotPassword = async (email: string) => {
+  const user = await UserModel.findOne({ email });
+
+  if (!user) {
+    return new ResultNotFound('User not found.');
+  }
+
+  const token = crypto.randomBytes(6).toString('hex');
+
+  const now = new Date();
+  now.setHours(now.getHours() + 1);
+
+  await UserModel.findByIdAndUpdate(user.id, {
+    ['$set']: {
+      passwordResetToken: token,
+      passwordResetExpires: now,
+    },
+  });
+
+  console.log(token, now);
+
+  return new ResultSuccess(user);
+
+  // transport.sendMail({
+  //   from: process.env.USER,
+  //   to: email,
+  //   subject: 'Password reset',
+  //   text: `Hello, ${user.name}! Use the following code to reset passsword in ClassManager. Code: ${token}`,
+  // });
+};
+
 const UserService = {
   register,
   authenticate,
+  forgotPassword,
 };
 
 export default UserService;

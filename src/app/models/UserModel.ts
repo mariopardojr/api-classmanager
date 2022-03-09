@@ -30,6 +30,14 @@ const UserSchema = new mongoose.Schema({
   students: {
     type: [StudentSchema],
   },
+  passwordResetToken: {
+    type: String,
+    select: false,
+  },
+  passwordResetExpires: {
+    type: Date,
+    select: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

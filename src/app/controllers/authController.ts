@@ -32,4 +32,18 @@ router.post('/authenticate', async (req, res) => {
   }
 });
 
+router.post('/forgot_password', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await UserService.forgotPassword(email);
+
+    if (user?.isError) {
+      return res.status(user.status).send({ message: user.errorMessage });
+    }
+    return res.send(user);
+  } catch (error) {
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Authenticate failed.', error });
+  }
+});
+
 export const authController = (app: Express) => app.use('/auth', router);
