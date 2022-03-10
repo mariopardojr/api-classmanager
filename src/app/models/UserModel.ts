@@ -2,9 +2,13 @@ import mongoose from '../../database';
 import bcrypt from 'bcryptjs';
 
 const StudentSchema = new mongoose.Schema({
-  name: String,
-  id: String,
-  imageUrl: String,
+  name: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+  },
 });
 
 const UserSchema = new mongoose.Schema({
@@ -37,6 +41,9 @@ const UserSchema = new mongoose.Schema({
   passwordResetExpires: {
     type: Date,
     select: false,
+  },
+  imageUrl: {
+    type: String,
   },
   createdAt: {
     type: Date,

@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { HttpStatusCode } from '../../contracts/result/http-status-code';
+
 import 'dotenv/config';
 import { UserModel } from '../models/UserModel';
+import { HttpStatusCode } from '../enums/http-status-code';
 
 const secret = String(process.env.JWT_SECRET);
 

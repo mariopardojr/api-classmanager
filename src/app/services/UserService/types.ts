@@ -31,8 +31,3 @@ export interface ResetPasswordParams {
   token: string;
   password: string;
 }
-
-export interface ResultError {
-  status: HttpStatusCode;
-  message: string;
-}
