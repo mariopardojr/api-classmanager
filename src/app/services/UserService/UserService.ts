@@ -7,10 +7,11 @@ import { ResultSuccess } from '../../../contracts/result/result-success';
 import { UserModel } from '../../models/UserModel';
 import { generateToken } from '../../../utils/generateToken';
 import { passwordVerification } from '../../../utils/passwordVerification';
-import { AuthenticateUser, User, UserAuth } from './types';
+import { AuthenticateUser, ResetPasswordParams, User, UserAuth } from './types';
 import { transport } from '../../modules/mailer';
 import crypto from 'crypto';
 import 'dotenv/config';
+import { ResultError } from '../../../contracts/result/result-error';
 
 const register = async (user: User): Promise<Result<AuthenticateUser>> => {
   const { email } = user;
@@ -61,22 +62,52 @@ const forgotPassword = async (email: string) => {
     },
   });
 
-  console.log(token, now);
+  // transport.sendMail(
+  //   {
+  //     from: process.env.USER,
+  //     to: email,
+  //     subject: 'Password reset',
+  //     text: `Hello, ${user.name}! Use the following code to reset passsword in ClassManager. Code: ${token}`,
+  //   },
+  //   (error) => {
+  //     if (error) {
+  //       return new ResultError('Cannot send token to reset password.');
+  //     }
+  //   }
+  // );
+};
 
-  return new ResultSuccess(user);
+const resetPassword = async (resetPassword: ResetPasswordParams) => {
+  const { email, token, password } = resetPassword;
 
-  // transport.sendMail({
-  //   from: process.env.USER,
-  //   to: email,
-  //   subject: 'Password reset',
-  //   text: `Hello, ${user.name}! Use the following code to reset passsword in ClassManager. Code: ${token}`,
-  // });
+  const user = await UserModel.findOne({ email }).select('+passwordResetToken passwordResetExpires');
+
+  if (!user) {
+    return new ResultNotFound('User not found.');
+  }
+
+  if (token !== user.passwordResetToken) {
+    return new ResultForbidden('Invalid token.');
+  }
+
+  const now = new Date();
+
+  if (now > user.passwordResetExpires) {
+    return new ResultForbidden('Token expired. Generate a new one.');
+  }
+
+  user.password = password;
+  user.passwordResetExpires = undefined;
+  user.passwordResetToken = undefined;
+
+  user.save();
 };
 
 const UserService = {
   register,
   authenticate,
   forgotPassword,
+  resetPassword,
 };
 
 export default UserService;

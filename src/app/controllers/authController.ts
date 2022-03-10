@@ -40,9 +40,23 @@ router.post('/forgot_password', async (req, res) => {
     if (user?.isError) {
       return res.status(user.status).send({ message: user.errorMessage });
     }
-    return res.send(user);
+    return res.send();
   } catch (error) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Authenticate failed.', error });
+  }
+});
+
+router.post('/reset_password', async (req, res) => {
+  try {
+    const user = await UserService.resetPassword(req.body);
+
+    if (user?.isError) {
+      return res.status(user.status).send({ message: user.errorMessage });
+    }
+
+    return res.send();
+  } catch (error) {
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Reset password failed.', error });
   }
 });
 

@@ -22,3 +22,9 @@ export interface UserAuth {
   email: string;
   password: string;
 }
+
+export interface ResetPasswordParams {
+  email: string;
+  token: string;
+  password: string;
+}
