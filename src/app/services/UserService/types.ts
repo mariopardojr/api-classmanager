@@ -1,3 +1,5 @@
+import { HttpStatusCode } from '../../enums/http-status-code';
+
 type Student = {
   id: string;
   name: string;
@@ -14,6 +16,7 @@ export interface User {
 }
 
 export interface AuthenticateUser {
+  status: HttpStatusCode;
   user: User;
   token: string;
 }
@@ -27,4 +30,9 @@ export interface ResetPasswordParams {
   email: string;
   token: string;
   password: string;
+}
+
+export interface ResultError {
+  status: HttpStatusCode;
+  message: string;
 }

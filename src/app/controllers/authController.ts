@@ -1,18 +1,19 @@
 import express, { Express } from 'express';
-import { HttpStatusCode } from '../../contracts/result/http-status-code';
+import { HttpStatusCode } from '../enums/http-status-code';
 import UserService from '../services/UserService/UserService';
 
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
-    const findUser = await UserService.register(req.body);
+    const user = await UserService.register(req.body);
 
-    if (findUser.isError) {
-      return res.status(findUser.status).send({ message: findUser.errorMessage });
+    if (user.status !== HttpStatusCode.CREATED) {
+      // @ts-ignore
+      return res.status(user.status).send(user);
     }
 
-    return res.status(findUser.status).send(findUser.data);
+    return res.status(user.status).send(user);
   } catch (error) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Registration failed.', error });
   }
@@ -22,13 +23,13 @@ router.post('/authenticate', async (req, res) => {
   try {
     const user = await UserService.authenticate(req.body);
 
-    if (user.isError) {
+    if (user.status !== HttpStatusCode.SUCCESS) {
       return res.status(user.status).send(user);
     }
 
     return res.status(user.status).send(user);
   } catch (error) {
-    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Authenticate failed.', error });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Authentication failed.', error });
   }
 });
 
@@ -37,8 +38,8 @@ router.post('/forgot_password', async (req, res) => {
   try {
     const user = await UserService.forgotPassword(email);
 
-    if (user?.isError) {
-      return res.status(user.status).send({ message: user.errorMessage });
+    if (user) {
+      return res.status(user.status).send(user);
     }
     return res.send();
   } catch (error) {
@@ -50,8 +51,8 @@ router.post('/reset_password', async (req, res) => {
   try {
     const user = await UserService.resetPassword(req.body);
 
-    if (user?.isError) {
-      return res.status(user.status).send({ message: user.errorMessage });
+    if (user) {
+      return res.status(user.status).send(user);
     }
 
     return res.send();

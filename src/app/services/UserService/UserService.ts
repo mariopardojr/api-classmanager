@@ -1,53 +1,47 @@
-import { Result } from '../../../contracts/result/result';
-import { ResultConflict } from '../../../contracts/result/result-conflict';
-import { ResultCreated } from '../../../contracts/result/result-created';
-import { ResultForbidden } from '../../../contracts/result/result-forbidden';
-import { ResultNotFound } from '../../../contracts/result/result-not-found';
-import { ResultSuccess } from '../../../contracts/result/result-success';
 import { UserModel } from '../../models/UserModel';
 import { generateToken } from '../../../utils/generateToken';
 import { passwordVerification } from '../../../utils/passwordVerification';
-import { AuthenticateUser, ResetPasswordParams, User, UserAuth } from './types';
+import { AuthenticateUser, ResetPasswordParams, ResultError, User, UserAuth } from './types';
 import { transport } from '../../modules/mailer';
 import crypto from 'crypto';
 import 'dotenv/config';
-import { ResultError } from '../../../contracts/result/result-error';
+import { HttpStatusCode } from '../../enums/http-status-code';
 
-const register = async (user: User): Promise<Result<AuthenticateUser>> => {
+const register = async (user: User): Promise<AuthenticateUser | ResultError> => {
   const { email } = user;
 
   const userExists = await UserModel.findOne({ email });
   if (userExists) {
-    return new ResultConflict('User already exists.');
+    return { status: HttpStatusCode.CONFLICT, message: 'User already exists.' };
   }
 
   const register = await UserModel.create(user);
   register.password = undefined;
 
-  return new ResultCreated({ user: register, token: generateToken(register.id) });
+  return { status: HttpStatusCode.CREATED, user: register, token: generateToken(register.id) };
 };
 
-const authenticate = async ({ email, password }: UserAuth): Promise<Result<AuthenticateUser>> => {
+const authenticate = async ({ email, password }: UserAuth): Promise<AuthenticateUser | ResultError> => {
   const user = await UserModel.findOne({ email }).select('+password');
 
   if (!user) {
-    return new ResultNotFound('User not found.');
+    return { status: HttpStatusCode.NOT_FOUND, message: 'User not found.' };
   }
 
   const comparePassword = await passwordVerification(password, user.password);
   if (!comparePassword) {
-    return new ResultForbidden('Invalid email or password.');
+    return { status: HttpStatusCode.FORBIDDEN, message: 'Invalid email or password.' };
   }
 
   user.password = undefined;
-  return new ResultSuccess({ user, token: generateToken({ id: user.id }) });
+  return { status: HttpStatusCode.SUCCESS, user, token: generateToken({ id: user.id }) };
 };
 
-const forgotPassword = async (email: string) => {
+const forgotPassword = async (email: string): Promise<void | ResultError> => {
   const user = await UserModel.findOne({ email });
 
   if (!user) {
-    return new ResultNotFound('User not found.');
+    return { status: HttpStatusCode.NOT_FOUND, message: 'User not found.' };
   }
 
   const token = crypto.randomBytes(6).toString('hex');
@@ -62,38 +56,38 @@ const forgotPassword = async (email: string) => {
     },
   });
 
-  // transport.sendMail(
-  //   {
-  //     from: process.env.USER,
-  //     to: email,
-  //     subject: 'Password reset',
-  //     text: `Hello, ${user.name}! Use the following code to reset passsword in ClassManager. Code: ${token}`,
-  //   },
-  //   (error) => {
-  //     if (error) {
-  //       return new ResultError('Cannot send token to reset password.');
-  //     }
-  //   }
-  // );
+  transport.sendMail(
+    {
+      from: process.env.USER,
+      to: email,
+      subject: 'Password reset',
+      text: `Hello, ${user.name}! Use the following code to reset passsword in ClassManager. Code: ${token}`,
+    },
+    (error) => {
+      if (error) {
+        return { status: HttpStatusCode.INTERNAL_SERVER_ERROR, message: 'Cannot send token to reset password.' };
+      }
+    }
+  );
 };
 
-const resetPassword = async (resetPassword: ResetPasswordParams) => {
+const resetPassword = async (resetPassword: ResetPasswordParams): Promise<void | ResultError> => {
   const { email, token, password } = resetPassword;
 
   const user = await UserModel.findOne({ email }).select('+passwordResetToken passwordResetExpires');
 
   if (!user) {
-    return new ResultNotFound('User not found.');
+    return { status: HttpStatusCode.NOT_FOUND, message: 'User not found.' };
   }
 
   if (token !== user.passwordResetToken) {
-    return new ResultForbidden('Invalid token.');
+    return { status: HttpStatusCode.UNAUTHORIZED, message: 'Invalid token.' };
   }
 
   const now = new Date();
 
   if (now > user.passwordResetExpires) {
-    return new ResultForbidden('Token expired. Generate a new one.');
+    return { status: HttpStatusCode.UNAUTHORIZED, message: 'Token expired. Generate a new one.' };
   }
 
   user.password = password;
