@@ -6,7 +6,7 @@ export const transport = nodemailer.createTransport({
   port: Number(process.env.PORT_MAILER),
   secure: false,
   auth: {
-    user: process.env.USER,
+    user: process.env.USER_MAILER,
     pass: process.env.PASS,
   },
 });

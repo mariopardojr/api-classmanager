@@ -37,7 +37,7 @@ const authenticate = async ({ email, password }: UserAuth): Promise<Authenticate
   return { status: HttpStatusCode.SUCCESS, user, token: generateToken({ id: user.id }) };
 };
 
-const forgotPassword = async (email: string): Promise<void | ResultError> => {
+const forgotPassword = async (email: string) => {
   const user = await UserModel.findOne({ email });
 
   if (!user) {
@@ -58,15 +58,14 @@ const forgotPassword = async (email: string): Promise<void | ResultError> => {
 
   transport.sendMail(
     {
-      from: process.env.USER,
+      from: process.env.USER_MAILER,
       to: email,
       subject: 'Password reset',
       text: `Hello, ${user.name}! Use the following code to reset passsword in ClassManager. Code: ${token}`,
     },
     (error) => {
-      if (error) {
-        return { status: HttpStatusCode.INTERNAL_SERVER_ERROR, message: 'Cannot send token to reset password.' };
-      }
+      console.error(error);
+      return { status: HttpStatusCode.BAD_REQUEST, message: 'Error to send email.' };
     }
   );
 };

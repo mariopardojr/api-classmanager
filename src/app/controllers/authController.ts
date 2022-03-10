@@ -37,11 +37,9 @@ router.post('/forgot_password', async (req, res) => {
   const { email } = req.body;
   try {
     const user = await UserService.forgotPassword(email);
+    console.log(user);
 
-    if (user) {
-      return res.status(user.status).send(user);
-    }
-    return res.send();
+    return res.send(user);
   } catch (error) {
     return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Authenticate failed.', error });
   }
