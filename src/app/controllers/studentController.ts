@@ -4,6 +4,16 @@ import StudentService from '../services/StudentService/StudentService';
 
 const router = express.Router();
 
+router.get('/students/:id', async (req, res) => {
+  try {
+    const students = await StudentService.getAllStudentsByTeacherId(req.params.id);
+
+    return res.status(students.status).send(students);
+  } catch (error) {
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Error to get students.', error });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const user = await StudentService.getStudent(req.params.id);

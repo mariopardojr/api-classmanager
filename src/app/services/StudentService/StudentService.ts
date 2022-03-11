@@ -1,6 +1,6 @@
+import mongoose from 'mongoose';
 import { HttpStatusCode } from '../../enums/http-status-code';
 import { StudentModel } from '../../models/StudentModel';
-import { UserModel } from '../../models/UserModel';
 import { ResultError } from '../interfaces';
 import { Student, StudentData } from './types';
 
@@ -14,18 +14,18 @@ const getStudent = async (id: string): Promise<Student | ResultError> => {
   return { status: HttpStatusCode.SUCCESS, student };
 };
 
+const getAllStudentsByTeacherId = async (teacherId: string) => {
+  const students = await StudentModel.find({ teacherId }, { name: 1, imageUrl: 1, _id: 1 });
+
+  if (!students) {
+    return { status: HttpStatusCode.NOT_FOUND, message: 'Teacher not found.' };
+  }
+
+  return { status: HttpStatusCode.SUCCESS, students };
+};
+
 const studentRegister = async (student: StudentData): Promise<Student> => {
   const register = await StudentModel.create(student);
-
-  await UserModel.findByIdAndUpdate(student.teacherId, {
-    ['$push']: {
-      students: {
-        id: register.id,
-        name: register.name,
-        imageUrl: register.imageUrl,
-      },
-    },
-  });
 
   return { status: HttpStatusCode.CREATED, student: register };
 };
@@ -33,6 +33,7 @@ const studentRegister = async (student: StudentData): Promise<Student> => {
 const StudentService = {
   getStudent,
   studentRegister,
+  getAllStudentsByTeacherId,
 };
 
 export default StudentService;

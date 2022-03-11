@@ -1,24 +1,14 @@
 import { UserModel } from '../../models/UserModel';
 import { generateToken } from '../../../utils/generateToken';
 import { passwordVerification } from '../../../utils/passwordVerification';
-import { AuthenticateUser, ResetPasswordParams, User, UserAuth } from './types';
+import { AuthenticateUser, ResetPasswordParams, UserData, UserAuth, User } from './types';
 import { transport } from '../../modules/mailer';
 import crypto from 'crypto';
 import 'dotenv/config';
 import { HttpStatusCode } from '../../enums/http-status-code';
 import { ResultError } from '../interfaces';
 
-const getUser = async (id: string): Promise<Partial<AuthenticateUser> | ResultError> => {
-  const user = await UserModel.findById(id);
-
-  if (!user) {
-    return { status: HttpStatusCode.NOT_FOUND, message: 'User not found.' };
-  }
-
-  return { status: HttpStatusCode.SUCCESS, user };
-};
-
-const register = async (user: User): Promise<AuthenticateUser | ResultError> => {
+const register = async (user: UserData): Promise<AuthenticateUser | ResultError> => {
   const { email } = user;
 
   const userExists = await UserModel.findOne({ email });
@@ -108,7 +98,6 @@ const resetPassword = async (resetPassword: ResetPasswordParams): Promise<void |
 };
 
 const UserService = {
-  getUser,
   register,
   authenticate,
   forgotPassword,

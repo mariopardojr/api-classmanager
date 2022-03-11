@@ -4,19 +4,6 @@ import UserService from '../services/UserService/UserService';
 
 const router = express.Router();
 
-router.get('/user/:id', async (req, res) => {
-  try {
-    const user = await UserService.getUser(req.params.id);
-
-    if (user.status !== HttpStatusCode.NOT_FOUND) {
-      return res.status(HttpStatusCode.NOT_FOUND).send(user);
-    }
-    return res.status(user.status).send(user);
-  } catch (error) {
-    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Search for an user failed.', error });
-  }
-});
-
 router.post('/register', async (req, res) => {
   try {
     const user = await UserService.register(req.body);

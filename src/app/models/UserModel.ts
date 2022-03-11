@@ -1,16 +1,6 @@
 import mongoose from '../../database';
 import bcrypt from 'bcryptjs';
 
-const StudentSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  imageUrl: {
-    type: String,
-  },
-});
-
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -30,9 +20,6 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-  },
-  students: {
-    type: [StudentSchema],
   },
   passwordResetToken: {
     type: String,

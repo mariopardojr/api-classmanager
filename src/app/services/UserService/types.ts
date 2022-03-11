@@ -6,7 +6,7 @@ type Student = {
   imageUrl: string;
 };
 
-export interface User {
+export interface UserData {
   id?: string;
   name: string;
   email: string;
@@ -15,9 +15,12 @@ export interface User {
   students: Student[] | undefined;
 }
 
-export interface AuthenticateUser {
+export interface User {
   status: HttpStatusCode;
-  user: User;
+  user: UserData;
+}
+
+export interface AuthenticateUser extends User {
   token: string;
 }
 

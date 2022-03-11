@@ -33,7 +33,7 @@ const StudentSchema = new mongoose.Schema({
   },
   notes: [NoteSchema],
   teacherId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   imageUrl: {
