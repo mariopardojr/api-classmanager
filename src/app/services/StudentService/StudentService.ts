@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { HttpStatusCode } from '../../enums/http-status-code';
 import { StudentModel } from '../../models/StudentModel';
 import { ResultError } from '../interfaces';

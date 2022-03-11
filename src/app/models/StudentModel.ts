@@ -1,16 +1,5 @@
 import mongoose from '../../database';
 
-const NoteSchema = new mongoose.Schema({
-  note: {
-    type: String,
-    required: true,
-  },
-  studentId: {
-    type: String,
-    required: true,
-  },
-});
-
 const StudentSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -31,7 +20,6 @@ const StudentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  notes: [NoteSchema],
   teacherId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

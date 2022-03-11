@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { authController } from './app/controllers/authController';
 import { studentController } from './app/controllers/studentController';
+import { noteController } from './app/controllers/noteController';
 
 const app = express();
 
@@ -12,5 +13,6 @@ app.use(cors());
 
 authController(app);
 studentController(app);
+noteController(app);
 
 app.listen(3000, () => console.log('Listen 3000 port.'));
