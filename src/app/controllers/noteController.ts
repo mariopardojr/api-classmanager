@@ -23,7 +23,7 @@ router.patch('/:id', async (req, res) => {
 
     return res.send();
   } catch (error) {
-    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Failed to create note.', error });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Failed to update note.', error });
   }
 });
 
@@ -36,7 +36,7 @@ router.delete('/:id', async (req, res) => {
 
     return res.send();
   } catch (error) {
-    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Failed to create note.', error });
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({ message: 'Failed to delete note.', error });
   }
 });
 
