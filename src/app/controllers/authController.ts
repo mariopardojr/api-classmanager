@@ -9,7 +9,6 @@ router.post('/register', async (req, res) => {
     const user = await UserService.register(req.body);
 
     if (user.status !== HttpStatusCode.CREATED) {
-      // @ts-ignore
       return res.status(user.status).send(user);
     }
 

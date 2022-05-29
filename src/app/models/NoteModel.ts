@@ -13,6 +13,6 @@ const NoteSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
-});
+}, { versionKey: false });
 
 export const NoteModel = mongoose.model('Note', NoteSchema);

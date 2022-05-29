@@ -5,6 +5,7 @@ import { authController } from './app/controllers/authController';
 import { studentController } from './app/controllers/studentController';
 import { noteController } from './app/controllers/noteController';
 
+const PORT = process.env.PORT || 3000
 const app = express();
 
 app.use(bodyParser.json());
@@ -15,4 +16,4 @@ authController(app);
 studentController(app);
 noteController(app);
 
-app.listen(3000, () => console.log('Listen 3000 port.'));
+app.listen(PORT, () => console.log(`Listen ${PORT} port.`));
