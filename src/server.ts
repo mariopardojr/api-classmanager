@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
 import { authController } from './app/controllers/authController';
@@ -9,8 +8,8 @@ import 'dotenv/config';
 const PORT = process.env.PORT || 3000
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 authController(app);
