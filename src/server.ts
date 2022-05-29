@@ -4,6 +4,7 @@ import cors from 'cors';
 import { authController } from './app/controllers/authController';
 import { studentController } from './app/controllers/studentController';
 import { noteController } from './app/controllers/noteController';
+import 'dotenv/config';
 
 const PORT = process.env.PORT || 3000
 const app = express();

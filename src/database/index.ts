@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import 'dotenv/config';
+
 
 mongoose
   .connect(String(process.env.MONGO_URL))
