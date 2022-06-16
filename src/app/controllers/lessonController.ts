@@ -50,4 +50,4 @@ router.post('/create', async (req, res) => {
   }
 });
 
-export const noteController = (app: Express) => app.use('/lessons', router);
+export const lessonController = (app: Express) => app.use('/lessons', router);
