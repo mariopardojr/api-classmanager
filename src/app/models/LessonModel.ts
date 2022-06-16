@@ -6,7 +6,7 @@ const LessonSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   studentId: {
@@ -27,4 +27,4 @@ const LessonSchema = new mongoose.Schema({
   }
 }, { versionKey: false });
 
-export const LessonModel = mongoose.model('Note', LessonSchema);
+export const LessonModel = mongoose.model('Lesson', LessonSchema);
